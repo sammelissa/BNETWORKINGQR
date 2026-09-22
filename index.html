@@ -797,12 +797,34 @@ window.addEventListener(
   "load",
   function() {
 
+    const params = new URLSearchParams(
+      window.location.search
+    );
+
+    const id = params.get("id");
+
+    if (id) {
+
+      const qr = id.trim().toUpperCase();
+
+      if (/^QR\d+$/.test(qr)) {
+
+        console.log(
+          "QR reçu directement dans l'URL :",
+          qr
+        );
+
+        dernierQR = qr;
+
+        verifierQR(qr);
+
+        return;
+      }
+    }
+
+    // Aucun QR dans l'URL :
+    // on ouvre normalement la caméra
     demarrerScanner();
 
   }
 );
-
-</script>
-
-</body>
-</html>
