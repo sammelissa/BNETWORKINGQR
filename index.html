@@ -9,6 +9,7 @@
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
+    
 
     body {
       font-family: Arial, sans-serif;
@@ -237,151 +238,122 @@
 
     function afficherPageQR(id) {
 
-      // Cacher le scanner
-      document.getElementById("scannerPage").style.display = "none";
+  // Cacher le scanner
+  document.getElementById("scannerPage").style.display = "none";
 
-      // Afficher la page QR
-      document.getElementById("pageQR").style.display = "block";
+  // Afficher la page QR
+  document.getElementById("pageQR").style.display = "block";
 
+  const identifiant =
+    String(id).trim().toUpperCase();
 
-      const identifiant =
-        String(id).trim().toUpperCase();
+  // Vérification du format
+  if (!/^QR\d+$/i.test(identifiant)) {
 
+    afficherErreurQR(
+      "❌ QR NON VALIDE",
+      "Identifiant incorrect."
+    );
 
-      // Vérification du format
-      if (!/^QR\d+$/i.test(identifiant)) {
+    return;
+  }
 
-        afficherErreurQR(
-          "❌ QR NON VALIDE",
-          "Identifiant incorrect."
-        );
+  // Affichage de l'ID
+  document.getElementById("qrId").textContent =
+    identifiant;
 
-        return;
-      }
+  // Appel Apps Script
+  fetch(
+    APPS_SCRIPT_URL +
+    "?id=" +
+    encodeURIComponent(identifiant)
+  )
 
+  .then(response => {
 
-      // Affichage de l'ID
-      document.getElementById("qrId").textContent =
-        identifiant;
+    if (!response.ok) {
+      throw new Error("Erreur serveur");
+    }
 
+    return response.json();
 
-      // Appel Apps Script
-      fetch(
-        APPS_SCRIPT_URL +
-        "?id=" +
-        encodeURIComponent(identifiant)
-      )
+  })
 
-      .then(response => {
+  .then(data => {
 
-        return response.text();
+    // ==========================================
+    // QR INTROUVABLE
+    // ==========================================
 
-      })
+    if (!data.success) {
 
-      .then(html => {
+      afficherErreurQR(
+        "❌ QR NON VALIDE",
+        data.message || "QR introuvable."
+      );
 
-        // Apps Script retourne une page HTML.
-        // On extrait uniquement les informations
-        // nécessaires.
-
-        const parser =
-          new DOMParser();
-
-        const doc =
-          parser.parseFromString(
-            html,
-            "text/html"
-          );
-
-
-        const texte =
-          doc.body.innerText;
+      return;
+    }
 
 
-        // ==========================================
-        // EXTRACTION DES INFORMATIONS
-        // ==========================================
+    // ==========================================
+    // AFFICHAGE DES INFORMATIONS
+    // ==========================================
 
-        const nom =
-          extraireInformation(
-            texte,
-            "Nom :"
-          );
+    document.getElementById("nom").textContent =
+      data.nom || "-";
 
-        const prenom =
-          extraireInformation(
-            texte,
-            "Prénom :"
-          );
+    document.getElementById("prenom").textContent =
+      data.prenom || "-";
 
-        const fonction =
-          extraireInformation(
-            texte,
-            "Fonction :"
-          );
-
-        const paiement =
-          extraireInformation(
-            texte,
-            "Paiement :"
-          );
+    document.getElementById("fonction").textContent =
+      data.fonction || "-";
 
 
-        // ==========================================
-        // AFFICHAGE
-        // ==========================================
+    // ==========================================
+    // PAIEMENT
+    // ==========================================
 
-        document.getElementById("nom").textContent =
-          nom || "-";
-
-        document.getElementById("prenom").textContent =
-          prenom || "-";
-
-        document.getElementById("fonction").textContent =
-          fonction || "-";
+    const paiementElement =
+      document.getElementById("paiement");
 
 
-        const paiementElement =
-          document.getElementById("paiement");
+    if (
+      String(data.paiement).toUpperCase() === "OUI"
+    ) {
 
+      paiementElement.textContent =
+        "Paiement : OUI";
 
-        if (
-          paiement &&
-          paiement.toUpperCase().includes("OUI")
-        ) {
-
-          paiementElement.textContent =
-            "Paiement : OUI";
-
-          paiementElement.style.background =
-            "#d4edda";
-
-        }
-
-        else {
-
-          paiementElement.textContent =
-            "Paiement : NON";
-
-          paiementElement.style.background =
-            "#fff3cd";
-
-        }
-
-      })
-
-      .catch(error => {
-
-        console.error(error);
-
-        afficherErreurQR(
-          "❌ ERREUR",
-          "Impossible de récupérer les informations du QR."
-        );
-
-      });
+      paiementElement.style.background =
+        "#d4edda";
 
     }
+
+    else {
+
+      paiementElement.textContent =
+        "Paiement : NON";
+
+      paiementElement.style.background =
+        "#fff3cd";
+
+    }
+
+  })
+
+  .catch(error => {
+
+    console.error(error);
+
+    afficherErreurQR(
+      "❌ ERREUR",
+      "Impossible de récupérer les informations du QR."
+    );
+
+  });
+
+}
 
 
 
