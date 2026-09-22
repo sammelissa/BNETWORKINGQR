@@ -707,17 +707,15 @@ async function traiterScan(decodedText) {
    DÉMARRER CAMÉRA
    ===================================================== */
 
-async function demarrerScanner() {
+async function redemarrerScanner() {
 
-  async function demarrerScanner() {
+  document.getElementById(
+    "restartButton"
+  ).style.display = "none";
 
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get("id");
+  await demarrerScanner();
 
-  if (id && /^QR\d+$/i.test(id.trim())) {
-    console.log("QR direct détecté → caméra bloquée.");
-    return;
-  }
+}
 
   verificationEnCours = false;
 
@@ -1009,8 +1007,14 @@ window.addEventListener("load", function() {
     "Aucun QR dans l'URL → ouverture du scanner"
   );
 
-  demarrerScanner();
+    demarrerScanner();
 
 });
+
+</script>
+
+</body>
+
+</html>
 
 </html>
