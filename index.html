@@ -686,7 +686,7 @@ async function traiterScan(decodedText) {
 
     try {
 
-      await scanner.stop();
+       scanner.stop();
 
       scannerActif = false;
 
@@ -745,7 +745,7 @@ async function redemarrerScanner() {
 
       if (scannerActif) {
 
-        await scanner.stop();
+      scanner.stop();
 
       }
 
@@ -816,7 +816,7 @@ async function redemarrerScanner() {
 
   try {
 
-    await scanner.start(
+     scanner.start(
 
       {
         facingMode: {
@@ -853,7 +853,7 @@ async function redemarrerScanner() {
 
     try {
 
-      await scanner.start(
+      scanner.start(
 
         {
           facingMode:
