@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,554 +7,652 @@
 
   <title>BNETWORKING</title>
 
-  <script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
   <style>
-    
+
+    * {
+      box-sizing: border-box;
+    }
 
     body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #f5f5f5;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f5f5;
+      color: #222;
     }
 
-    h1 {
-      margin-top: 20px;
-    }
-
-    #reader {
-      width: 100%;
-      max-width: 450px;
-      margin: 25px auto;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    #result {
-      max-width: 450px;
-      margin: 20px auto;
-      padding: 20px;
-      border-radius: 10px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    button {
-      padding: 14px 25px;
-      font-size: 17px;
-      border: none;
-      border-radius: 8px;
-      background: #222;
-      color: white;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    /* ==========================================
-       PAGE QR
-       ========================================== */
-
-    #pageQR {
-      display: none;
-    }
-
-    .card {
-      max-width: 500px;
-      margin: 30px auto;
-      background: white;
-      padding: 30px;
-      border-radius: 18px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
-      text-align: left;
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 25px 18px;
     }
 
     .logo {
       text-align: center;
-      font-size: 28px;
-      font-weight: bold;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
 
-    .id {
+    .logo h1 {
+      margin: 0;
+      font-size: 32px;
+      letter-spacing: 2px;
+    }
+
+    .logo p {
+      margin-top: 5px;
+      color: #666;
+    }
+
+    #reader {
+      width: 100%;
+      max-width: 500px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    .result-box {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 12px;
       text-align: center;
-      font-size: 18px;
+      font-size: 17px;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      margin-top: 20px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+      text-align: center;
+      margin-top: 0;
       margin-bottom: 25px;
     }
 
     .info {
-      margin: 18px 0;
-      font-size: 17px;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .info:last-child {
+      border-bottom: none;
     }
 
     .label {
       font-weight: bold;
+      display: block;
+      margin-bottom: 4px;
+      color: #555;
     }
 
-    .paiement {
-      margin-top: 25px;
-      padding: 15px;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 20px;
+    .value {
+      font-size: 18px;
+    }
+
+    .paiement-oui {
       font-weight: bold;
+      color: #198754;
+    }
+
+    .paiement-non {
+      font-weight: bold;
+      color: #dc3545;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 15px;
     }
 
   </style>
 </head>
 
-
 <body>
 
+<div class="container">
 
-  <!-- =====================================================
-       MODE SCANNER À L'ACCUEIL
-       ===================================================== -->
+  <!-- ========================= -->
+  <!-- PAGE SCANNER -->
+  <!-- ========================= -->
 
   <div id="scannerPage">
 
-    <h1>🎟️ BNETWORKING</h1>
-
-    <p>Présentez le QR code devant la caméra</p>
+    <div class="logo">
+      <h1>BNETWORKING</h1>
+      <p>Validation des invitations</p>
+    </div>
 
     <div id="reader"></div>
 
-    <div id="result">
-      📷 En attente du scan...
-    </div>
-
-    <button onclick="restartScanner()">
-      📷 Scanner le suivant
-    </button>
+    <div id="scanResult" class="result-box hidden"></div>
 
   </div>
 
 
+  <!-- ========================= -->
+  <!-- PAGE INFORMATIONS QR -->
+  <!-- ========================= -->
 
-  <!-- =====================================================
-       MODE PAGE QR PUBLIQUE
-       Exemple :
-       https://sammelissa.github.io/BNETWORKINGQR/?id=QR3
-       ===================================================== -->
+  <div id="pageQR" class="hidden">
 
-  <div id="pageQR">
+    <div class="logo">
+      <h1>BNETWORKING</h1>
+      <p>Invitation</p>
+    </div>
 
     <div class="card">
 
-      <div class="logo">
-        BNETWORKING
-      </div>
+      <h2>Informations de l'invité</h2>
 
-      <div class="id">
-        <span class="label">ID :</span>
-        <span id="qrId"></span>
+      <div class="info">
+        <span class="label">ID QR</span>
+        <span id="qrId" class="value">—</span>
       </div>
 
       <div class="info">
-        <span class="label">Nom :</span>
-        <span id="nom"></span>
+        <span class="label">Nom</span>
+        <span id="nom" class="value">—</span>
       </div>
 
       <div class="info">
-        <span class="label">Prénom :</span>
-        <span id="prenom"></span>
+        <span class="label">Prénom</span>
+        <span id="prenom" class="value">—</span>
       </div>
 
       <div class="info">
-        <span class="label">Fonction :</span>
-        <span id="fonction"></span>
+        <span class="label">Fonction / Entreprise</span>
+        <span id="fonction" class="value">—</span>
       </div>
 
-      <div
-        id="paiement"
-        class="paiement">
+      <div class="info">
+        <span class="label">Paiement</span>
+        <span id="paiement" class="value">—</span>
       </div>
 
     </div>
 
+    <div id="pageResult" class="result-box hidden"></div>
+
   </div>
 
+</div>
 
 
-  <script>
+<script>
+
+  /* =====================================================
+     URL GOOGLE APPS SCRIPT
+     ===================================================== */
+
+  const APPS_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbxtNNkbfy_bRTsd7vZsSyCWOTJCmYzxsYjpb_8QvvI9q_C6iHQQvDxButLiHSjOoO_xnw/exec";
 
 
-    // =====================================================
-    // URL APPS SCRIPT
-    // =====================================================
+  /* =====================================================
+     VARIABLES
+     ===================================================== */
 
-    const APPS_SCRIPT_URL =
-      "https://script.google.com/macros/s/AKfycbw6W6Ed4HEF7j2BFzwKCVkpUfuK4Bkma1V9diSWD1vciB9RChRAeXMfEAsy0MOa95jBsA/exec";
-
-
-    let scanner;
-    let scanEnCours = false;
+  let scanner = null;
+  let scanEnCours = false;
 
 
+  /* =====================================================
+     AFFICHER UN RESULTAT
+     ===================================================== */
 
-    // =====================================================
-    // DÉTECTION DU MODE
-    // =====================================================
+  function afficherResultat(message, color) {
 
-    window.onload = function() {
+    const box = document.getElementById("scanResult");
 
-      const params =
-        new URLSearchParams(window.location.search);
+    box.innerHTML = message;
 
-      const id =
-        params.get("id");
+    box.style.backgroundColor =
+      color || "#e9ecef";
 
-
-      // ==========================================
-      // SI ?id=QR3
-      // → PAGE QR
-      // ==========================================
-
-      if (id) {
-
-        afficherPageQR(id);
-
-      }
-
-      // ==========================================
-      // SINON
-      // → SCANNER
-      // ==========================================
-
-      else {
-
-        demarrerScanner();
-
-      }
-
-    };
-
-
-
-    // =====================================================
-    // PAGE QR PUBLIQUE
-    // =====================================================
-
-    function afficherPageQR(id) {
-
-  // Cacher le scanner
-  document.getElementById("scannerPage").style.display = "none";
-
-  // Afficher la page QR
-  document.getElementById("pageQR").style.display = "block";
-
-  const identifiant =
-    String(id).trim().toUpperCase();
-
-  // Vérification du format
-  if (!/^QR\d+$/i.test(identifiant)) {
-
-    afficherErreurQR(
-      "❌ QR NON VALIDE",
-      "Identifiant incorrect."
-    );
-
-    return;
+    box.classList.remove("hidden");
   }
 
-  // Affichage de l'ID
-  document.getElementById("qrId").textContent =
-    identifiant;
 
-  // Appel Apps Script
-  fetch(
-    APPS_SCRIPT_URL +
-    "?id=" +
-    encodeURIComponent(identifiant)
-  )
+  /* =====================================================
+     AFFICHER RESULTAT PAGE QR
+     ===================================================== */
 
-  .then(response => {
+  function afficherResultatPage(message, color) {
 
-    if (!response.ok) {
-      throw new Error("Erreur serveur");
-    }
+    const box = document.getElementById("pageResult");
 
-    return response.json();
+    box.innerHTML = message;
 
-  })
+    box.style.backgroundColor =
+      color || "#e9ecef";
 
-  .then(data => {
-
-    // ==========================================
-    // QR INTROUVABLE
-    // ==========================================
-
-    if (!data.success) {
-
-      afficherErreurQR(
-        "❌ QR NON VALIDE",
-        data.message || "QR introuvable."
-      );
-
-      return;
-    }
+    box.classList.remove("hidden");
+  }
 
 
-    // ==========================================
-    // AFFICHAGE DES INFORMATIONS
-    // ==========================================
+  /* =====================================================
+     EXTRAIRE L'ID DU QR
+     ===================================================== */
 
-    document.getElementById("nom").textContent =
-      data.nom || "-";
+  function extraireIdQR(decodedText) {
 
-    document.getElementById("prenom").textContent =
-      data.prenom || "-";
+    try {
 
-    document.getElementById("fonction").textContent =
-      data.fonction || "-";
+      const url = new URL(decodedText);
 
+      const id = url.searchParams.get("id");
 
-    // ==========================================
-    // PAIEMENT
-    // ==========================================
+      if (id) {
+        return id.trim().toUpperCase();
+      }
 
-    const paiementElement =
-      document.getElementById("paiement");
+    } catch (e) {
 
-
-    if (
-      String(data.paiement).toUpperCase() === "OUI"
-    ) {
-
-      paiementElement.textContent =
-        "Paiement : OUI";
-
-      paiementElement.style.background =
-        "#d4edda";
+      // Le QR peut contenir directement QR3
+      // ou BNETWORKING-QR3
 
     }
 
-    else {
 
-      paiementElement.textContent =
-        "Paiement : NON";
+    const texte = String(decodedText).trim();
 
-      paiementElement.style.background =
-        "#fff3cd";
+    const matchQR =
+      texte.match(/QR\d+/i);
+
+    if (matchQR) {
+
+      return matchQR[0]
+        .trim()
+        .toUpperCase();
 
     }
 
-  })
+    return null;
+  }
 
-  .catch(error => {
 
-    console.error(error);
+  /* =====================================================
+     CONVERTIR QR3 -> BNETWORKING-QR3
+     ===================================================== */
 
-    afficherErreurQR(
-      "❌ ERREUR",
-      "Impossible de récupérer les informations du QR."
+  function convertirEnCodeValidation(id) {
+
+    id = String(id)
+      .trim()
+      .toUpperCase();
+
+    if (id.startsWith("BNETWORKING-")) {
+
+      return id;
+
+    }
+
+    if (id.startsWith("QR")) {
+
+      return "BNETWORKING-" + id;
+
+    }
+
+    return null;
+  }
+
+
+  /* =====================================================
+     VALIDATION DU QR
+     ===================================================== */
+
+  async function validerQRCode(codeValidation) {
+
+    afficherResultat(
+      "⏳ Vérification du QR code...",
+      "#fff3cd"
     );
 
-  });
+    try {
 
-}
+      const url =
+        APPS_SCRIPT_URL +
+        "?code=" +
+        encodeURIComponent(codeValidation) +
+        "&t=" +
+        Date.now();
 
+      console.log("URL envoyée :", url);
 
-
-    // =====================================================
-    // EXTRAIRE UNE INFORMATION
-    // =====================================================
-
-    function extraireInformation(
-      texte,
-      label
-    ) {
-
-      const lignes =
-        texte.split("\n");
-
-
-      for (
-        let i = 0;
-        i < lignes.length;
-        i++
-      ) {
-
-        const ligne =
-          lignes[i].trim();
-
-
-        if (
-          ligne.startsWith(label)
-        ) {
-
-          return ligne
-            .substring(label.length)
-            .trim();
-
-        }
-
-      }
-
-
-      return "";
-
-    }
-
-
-
-    // =====================================================
-    // ERREUR PAGE QR
-    // =====================================================
-
-    function afficherErreurQR(
-      titre,
-      message
-    ) {
-
-      document.getElementById("pageQR").innerHTML = `
-
-        <div class="card">
-
-          <div class="logo">
-            BNETWORKING
-          </div>
-
-          <h2 style="text-align:center;">
-            ${titre}
-          </h2>
-
-          <p style="text-align:center;">
-            ${message}
-          </p>
-
-        </div>
-
-      `;
-
-    }
-
-
-
-    // =====================================================
-    // DÉMARRAGE DU SCANNER
-    // =====================================================
-
-    function demarrerScanner() {
-
-      scanner =
-        new Html5Qrcode("reader");
-
-
-      scanner.start(
-
-        {
-          facingMode: "environment"
-        },
-
-        {
-          fps: 10,
-
-          qrbox: {
-            width: 250,
-            height: 250
-          }
-
-        },
-
-        onScanSuccess
-
-      )
-
-      .catch(function(error) {
-
-        afficherResultat(
-
-          "❌ Impossible d'accéder à la caméra.",
-
-          "#f8d7da"
-
-        );
-
+      const response = await fetch(url, {
+        method: "GET",
+        redirect: "follow",
+        cache: "no-store"
       });
 
-    }
-
-
-
-    // =====================================================
-    // QR SCANNÉ PAR L'APPLICATION D'ACCUEIL
-    // =====================================================
-
-    function onScanSuccess(
-      decodedText
-    ) {
-
-      if (scanEnCours) {
-        return;
-      }
-
-
-      scanEnCours = true;
-
-
-      afficherResultat(
-
-        "⏳ Vérification du QR code...",
-
-        "#fff3cd"
-
+      console.log(
+        "Statut serveur :",
+        response.status
       );
 
+      if (!response.ok) {
 
-      scanner.pause(true);
+        throw new Error(
+          "HTTP " + response.status
+        );
 
+      }
 
+      const texte =
+        await response.text();
 
-      // ==========================================
-      // EXTRACTION DE QR1 / QR2 / QR3...
-      // ==========================================
+      console.log(
+        "Réponse serveur :",
+        texte
+      );
 
-      let identifiant = "";
-
+      let resultat;
 
       try {
 
-        const url =
-          new URL(decodedText);
+        resultat =
+          JSON.parse(texte);
 
+      } catch (e) {
 
-        identifiant =
-          url.searchParams.get("id");
-
-      }
-
-      catch (error) {
-
-        identifiant =
-          decodedText;
+        throw new Error(
+          "Réponse serveur invalide"
+        );
 
       }
 
 
-      identifiant =
-        String(identifiant)
-          .trim()
-          .toUpperCase();
+      /* ===============================================
+         AFFICHAGE
+         =============================================== */
 
-
-
-      // ==========================================
-      // VÉRIFICATION
-      // ==========================================
+      let message =
+        resultat.message ||
+        "Réponse reçue du serveur.";
 
       if (
-        !/^QR\d+$/i.test(identifiant)
+        resultat.success === true &&
+        resultat.invite
       ) {
 
-        afficherResultat(
+        message =
+          "✅ QR CODE VALIDE<br><br>" +
 
-          "❌ QR NON VALIDE",
+          "<strong>" +
+          resultat.invite +
+          "</strong><br>" +
 
+          (
+            resultat.fonction
+              ? resultat.fonction + "<br>"
+              : ""
+          ) +
+
+          (
+            resultat.paiement
+              ? "<br>💳 Paiement : <strong>" +
+                resultat.paiement +
+                "</strong>"
+              : ""
+          );
+
+      }
+
+
+      afficherResultat(
+        message,
+        resultat.color || "#d1e7dd"
+      );
+
+
+    } catch (erreur) {
+
+      console.error(
+        "Erreur complète :",
+        erreur
+      );
+
+      afficherResultat(
+        "❌ Erreur de connexion au serveur.<br><br>" +
+        "<small>Veuillez vérifier votre connexion Internet et réessayer.</small>",
+        "#f8d7da"
+      );
+
+    }
+
+  }
+
+
+  /* =====================================================
+     SCAN SUCCESS
+     ===================================================== */
+
+  async function onScanSuccess(decodedText) {
+
+    if (scanEnCours) {
+      return;
+    }
+
+    scanEnCours = true;
+
+    console.log(
+      "QR détecté :",
+      decodedText
+    );
+
+
+    const id =
+      extraireIdQR(decodedText);
+
+
+    if (!id) {
+
+      afficherResultat(
+        "❌ QR CODE NON VALIDE",
+        "#f8d7da"
+      );
+
+      scanEnCours = false;
+
+      return;
+
+    }
+
+
+    const codeValidation =
+      convertirEnCodeValidation(id);
+
+
+    if (!codeValidation) {
+
+      afficherResultat(
+        "❌ Identifiant QR invalide.",
+        "#f8d7da"
+      );
+
+      scanEnCours = false;
+
+      return;
+
+    }
+
+
+    console.log(
+      "ID QR :",
+      id
+    );
+
+    console.log(
+      "Code validation :",
+      codeValidation
+    );
+
+
+    await validerQRCode(
+      codeValidation
+    );
+
+
+    /* ===============================================
+       Permettre un nouveau scan après 3 secondes
+       =============================================== */
+
+    setTimeout(function() {
+
+      scanEnCours = false;
+
+    }, 3000);
+
+  }
+
+
+  /* =====================================================
+     ERREUR DE SCAN CAMERA
+     ===================================================== */
+
+  function onScanFailure(error) {
+
+    // Ne rien afficher.
+    // html5-qrcode appelle cette fonction
+    // très fréquemment pendant la recherche du QR.
+
+  }
+
+
+  /* =====================================================
+     DEMARRER LA CAMERA
+     ===================================================== */
+
+  function demarrerScanner() {
+
+    scanner =
+      new Html5QrcodeScanner(
+        "reader",
+        {
+          fps: 10,
+          qrbox: {
+            width: 250,
+            height: 250
+          },
+          rememberLastUsedCamera: true
+        },
+        false
+      );
+
+
+    scanner.render(
+      onScanSuccess,
+      onScanFailure
+    );
+
+  }
+
+
+  /* =====================================================
+     PAGE INFORMATIONS DU QR
+     ===================================================== */
+
+  async function afficherPageQR(id) {
+
+    document
+      .getElementById("scannerPage")
+      .classList.add("hidden");
+
+    document
+      .getElementById("pageQR")
+      .classList.remove("hidden");
+
+
+    document
+      .getElementById("qrId")
+      .textContent = id;
+
+
+    try {
+
+      const url =
+        APPS_SCRIPT_URL +
+        "?id=" +
+        encodeURIComponent(id) +
+        "&t=" +
+        Date.now();
+
+
+      console.log(
+        "URL informations :",
+        url
+      );
+
+
+      const response =
+        await fetch(url, {
+          method: "GET",
+          redirect: "follow",
+          cache: "no-store"
+        });
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "HTTP " + response.status
+        );
+
+      }
+
+
+      const texte =
+        await response.text();
+
+
+      console.log(
+        "Réponse informations :",
+        texte
+      );
+
+
+      let resultat;
+
+      try {
+
+        resultat =
+          JSON.parse(texte);
+
+      } catch (e) {
+
+        throw new Error(
+          "Réponse JSON invalide"
+        );
+
+      }
+
+
+      if (!resultat.success) {
+
+        afficherResultatPage(
+          "❌ " +
+          (
+            resultat.message ||
+            "QR code introuvable."
+          ),
           "#f8d7da"
-
         );
 
         return;
@@ -561,119 +660,124 @@
       }
 
 
+      /* ===============================================
+         AFFICHAGE DES INFORMATIONS
+         =============================================== */
 
-      // ==========================================
-      // QR1
-      // devient
-      // BNETWORKING-QR1
-      // ==========================================
-
-      const codeValidation =
-        "BNETWORKING-" +
-        identifiant;
+      document
+        .getElementById("nom")
+        .textContent =
+          resultat.nom || "—";
 
 
-
-      // ==========================================
-      // ENVOI À APPS SCRIPT
-      // ==========================================
-
-      fetch(
-
-        APPS_SCRIPT_URL +
-        "?code=" +
-        encodeURIComponent(
-          codeValidation
-        )
-
-      )
-
-      .then(response => {
-
-        return response.json();
-
-      })
-
-      .then(data => {
-
-        afficherResultat(
-
-          data.message,
-
-          data.color
-
-        );
-
-      })
-
-      .catch(error => {
-
-        console.error(error);
+      document
+        .getElementById("prenom")
+        .textContent =
+          resultat.prenom || "—";
 
 
-        afficherResultat(
-
-          "❌ Erreur de connexion au serveur.",
-
-          "#f8d7da"
-
-        );
-
-      });
-
-    }
+      document
+        .getElementById("fonction")
+        .textContent =
+          resultat.fonction || "—";
 
 
-
-    // =====================================================
-    // AFFICHAGE DU RÉSULTAT
-    // =====================================================
-
-    function afficherResultat(
-      message,
-      couleur
-    ) {
-
-      const result =
-        document.getElementById(
-          "result"
-        );
+      const paiement =
+        document.getElementById("paiement");
 
 
-      result.innerHTML =
-        message;
+      paiement.textContent =
+        resultat.paiement || "NON";
 
 
-      result.style.background =
-        couleur;
+      if (
+        String(resultat.paiement)
+          .toUpperCase() === "OUI"
+      ) {
 
-    }
+        paiement.className =
+          "value paiement-oui";
+
+      } else {
+
+        paiement.className =
+          "value paiement-non";
+
+      }
 
 
+    } catch (erreur) {
 
-    // =====================================================
-    // SCANNER LE QR SUIVANT
-    // =====================================================
-
-    function restartScanner() {
-
-      scanEnCours = false;
-
-
-      afficherResultat(
-
-        "📷 En attente du scan...",
-
-        "#f5f5f5"
-
+      console.error(
+        "Erreur page QR :",
+        erreur
       );
 
 
-      scanner.resume();
+      afficherResultatPage(
+        "❌ Erreur de connexion au serveur.<br><br>" +
+        "<small>Impossible de récupérer les informations du QR.</small>",
+        "#f8d7da"
+      );
 
     }
 
-  </script>
+  }
+
+
+  /* =====================================================
+     INITIALISATION
+     ===================================================== */
+
+  function initialiser() {
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const id =
+      params.get("id");
+
+
+    /* ===============================================
+       SI ?id=QR3
+       → PAGE INFORMATIONS
+       =============================================== */
+
+    if (id) {
+
+      afficherPageQR(
+        id.trim().toUpperCase()
+      );
+
+      return;
+
+    }
+
+
+    /* ===============================================
+       SINON
+       → APPLICATION SCANNER
+       =============================================== */
+
+    demarrerScanner();
+
+  }
+
+
+  /* =====================================================
+     LANCEMENT
+     ===================================================== */
+
+  window.addEventListener(
+    "load",
+    initialiser
+  );
+
+</script>
 
 </body>
 </html>
+```
