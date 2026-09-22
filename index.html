@@ -71,11 +71,11 @@
   <script>
 
     // =====================================================
-    // COLLE TON URL APPS SCRIPT ENTRE LES GUILLEMETS
+    // URL APPS SCRIPT
     // =====================================================
 
     const APPS_SCRIPT_URL =
-      "https://script.google.com/macros/s/AKfycbxtNNkbfy_bRTsd7vZsSyCWOTJCmYzxsYjpb_8QvvI9q_C6iHQQvDxButLiHSjOoO_xnw/execc";
+      "https://script.google.com/macros/s/AKfycbxtNNkbfy_bRTsd7vZsSyCWOTJCmYzxsYjpb_8QvvI9q_C6iHQQvDxButLiHSjOoO_xnw/exec";
 
 
     let scanner;
@@ -134,11 +134,63 @@
       scanner.pause(true);
 
 
-      // Envoi du code à Apps Script
+      // =====================================================
+      // EXTRACTION DE L'IDENTIFIANT QR
+      // =====================================================
+
+      let identifiant = "";
+
+      try {
+
+        // Si le QR contient une URL avec ?id=QR1
+        const url = new URL(decodedText);
+
+        identifiant = url.searchParams.get("id");
+
+      } catch (error) {
+
+        // Si le QR contient directement QR1
+        identifiant = decodedText;
+
+      }
+
+
+      // Nettoyage
+      identifiant = String(identifiant).trim().toUpperCase();
+
+
+      // =====================================================
+      // VÉRIFICATION DE L'IDENTIFIANT
+      // =====================================================
+
+      if (!/^QR\d+$/i.test(identifiant)) {
+
+        afficherResultat(
+          "❌ QR NON VALIDE",
+          "#f8d7da"
+        );
+
+        return;
+      }
+
+
+      // =====================================================
+      // TRANSFORMATION EN CODE DE VALIDATION
+      // QR1 → BNETWORKING-QR1
+      // =====================================================
+
+      const codeValidation =
+        "BNETWORKING-" + identifiant;
+
+
+      // =====================================================
+      // ENVOI À APPS SCRIPT
+      // =====================================================
+
       fetch(
         APPS_SCRIPT_URL +
         "?code=" +
-        encodeURIComponent(decodedText)
+        encodeURIComponent(codeValidation)
       )
 
       .then(response => response.json())
