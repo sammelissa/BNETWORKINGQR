@@ -709,6 +709,16 @@ async function traiterScan(decodedText) {
 
 async function demarrerScanner() {
 
+  async function demarrerScanner() {
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+
+  if (id && /^QR\d+$/i.test(id.trim())) {
+    console.log("QR direct détecté → caméra bloquée.");
+    return;
+  }
+
   verificationEnCours = false;
 
   dernierQR = null;
