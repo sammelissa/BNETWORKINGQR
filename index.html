@@ -927,113 +927,74 @@ async function redemarrerScanner() {
    ⭐ POINT IMPORTANT
    ===================================================== */
 
-window.addEventListener(
-  "load",
-  function() {
+window.addEventListener("load", function() {
 
-    /*
-     * On regarde immédiatement
-     * si l'application a reçu ?id=QR5
-     */
+  const params = new URLSearchParams(
+    window.location.search
+  );
 
-    const params =
-      new URLSearchParams(
-        window.location.search
+  const id = params.get("id");
+
+  console.log("ID reçu dans l'URL :", id);
+
+  // ==================================================
+  // QR OUVERT DIRECTEMENT PAR LE LIEN
+  // ==================================================
+
+  if (id) {
+
+    const qr = id.trim().toUpperCase();
+
+    if (/^QR\d+$/.test(qr)) {
+
+      console.log(
+        "QR détecté directement dans l'URL :",
+        qr
       );
 
+      dernierQR = qr;
 
-    const id =
-      params.get("id");
+      // IMPORTANT :
+      // on empêche complètement l'affichage du scanner
+      const reader =
+        document.getElementById("reader");
 
-
-    console.log(
-      "ID reçu dans l'URL :",
-      id
-    );
-
-
-    /*
-     * SI UN QR EST DANS L'URL
-     * → PAS DE CAMÉRA
-     * → VALIDATION DIRECTE
-     */
-
-    if (id) {
-
-      const qr =
-        id.trim().toUpperCase();
-
-
-      if (/^QR\d+$/.test(qr)) {
-
-        console.log(
-          "QR détecté dans l'URL :",
-          qr
-        );
-
-
-        dernierQR = qr;
-
-
-        /*
-         * IMPORTANT :
-         * on masque le scanner
-         */
-
-        document.getElementById(
-          "reader"
-        ).style.display =
-          "none";
-
-
-        afficherMessage(
-
-          "⏳" +
-
-          "<div class='result-title'>" +
-          "Vérification..." +
-          "</div>" +
-
-          "<div class='result-content' " +
-          "style='text-align:center'>" +
-
-          "QR : <strong>" +
-          qr +
-          "</strong>" +
-
-          "</div>",
-
-          "loading"
-        );
-
-
-        /*
-         * VALIDATION DIRECTE
-         */
-
-        verifierQR(qr);
-
-
-        return;
-
+      if (reader) {
+        reader.style.display = "none";
       }
 
+      document.getElementById("status").textContent =
+        "Validation de " + qr + "…";
+
+      afficherMessage(
+        "⏳" +
+        "<div class='result-title'>Vérification...</div>" +
+        "<div class='result-content' style='text-align:center'>" +
+        "QR : <strong>" + qr + "</strong>" +
+        "</div>",
+        "loading"
+      );
+
+      // VALIDATION DIRECTE
+      verifierQR(qr);
+
+      // TRÈS IMPORTANT :
+      // on arrête ici
+      return;
     }
-
-
-    /*
-     * AUCUN ID
-     * → fonctionnement normal
-     * → ouverture de la caméra
-     */
-
-    demarrerScanner();
-
   }
-);
 
-</script>
+  // ==================================================
+  // PAS DE QR DANS L'URL
+  // → ON OUVRE LA CAMÉRA
+  // ==================================================
 
-</body>
+  console.log(
+    "Aucun QR dans l'URL → ouverture du scanner"
+  );
+
+  demarrerScanner();
+
+});
 
 </html>
