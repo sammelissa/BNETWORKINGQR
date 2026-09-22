@@ -911,7 +911,13 @@ async function demarrerScanner() {
    ===================================================== */
 
 async function redemarrerScanner() {
+  const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
 
+if (id && /^QR\d+$/i.test(id.trim())) {
+  console.log("QR direct détecté → caméra bloquée.");
+  return;
+}
   document.getElementById(
     "restartButton"
   ).style.display =
